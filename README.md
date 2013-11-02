@@ -1,6 +1,6 @@
 Navigator
 =========
 
-TreeGrid example on pure css+html
+TreeGrid example on css+html+js without frameworks
 
 ![alt tag](https://github.com/Serjeo722/Navigator/blob/master/img/example.png?raw=true)
