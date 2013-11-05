@@ -59,47 +59,54 @@ function outLocation(location) {
 	var entities = getEntitiesFrom(location);
 	for ( var i in entities) {
 		var entity = entities[i];
+		p=1;
 		outEntity(entity, 1, new Boolean(false));
-		out("<br>");
 	}
 }
 
-var p = 0;
+var p = 1;
 
 function outEntity(e, n, last) {
 
 	var location = getLocationOf(e);
+	var entities3 = getDependenciesFor(e);
 
-	var color = "#e0e0e0";
+	var grayed = "NotGrayed";
 	if (p % 2 == 0) {
-		color = "#F0F0F0";
+		grayed = "Grayed";
 	}
 
 	p++;
 
+	if (n == 1) {
+		grayed = "NotGrayed";
+	}
+	
 	out('<ul class="Container">');
 
 	if (n == 1) {
-		out('<li class="IsRoot">');
-		color = "#a0a0a0";
+		out('<li class="IsRoot ExpandClosed">');
 	} else {
 		var isLast = "";
+		var isLeaf = "ExpandOpen";
 		if (last == true) {
 			isLast = "IsLast";
 		}
-		out('<li class="Node ExpandOpen ' + isLast + ' ">');
+		if (entities3.length == 0){
+			isLeaf = "ExpandLeaf";
+		}
+		out('<li class="Node '+ isLeaf+ " " + isLast + ' ">');
 	}
-
+	
 	out('<div class="Expand"></div>');
 	out('<div class="Content">');
-	out('<table width=100% cellspacing="0" cellpadding="0"><tr bgcolor='
-			+ color + '><td>' + e + '</td><td width=800px>'
+	out('<table width=100% cellspacing="0" cellpadding="0"><tr class="'
+			+ grayed + '"><td>' + e + '</td><td width=800px>'
 			+ location.replace("unknown", "") + '</td></tr></table>');
 	out('</div>');
 
-	var entities3 = getDependenciesFor(e);
 
-	for ( var i3 in entities3) {
+	for (var i3 in entities3) {
 		var eN = entities3[i3];
 
 		outEntity(eN, n + 1, i3 == Object.keys(entities3).length - 1);
@@ -117,4 +124,26 @@ function out(str) {
 
 window.onload = function() {
 	outLocation("place1");
+}
+
+function tree_toggle(event) {
+	event = event || window.event
+	var clickedElem = event.target || event.srcElement
+
+	if (!hasClass(clickedElem, 'Expand')) {
+		return
+	}
+
+	var node = clickedElem.parentNode
+	if (hasClass(node, 'ExpandLeaf')) {
+		return
+	}
+
+	var newClass = hasClass(node, 'ExpandOpen') ? 'ExpandClosed' : 'ExpandOpen'
+	var re =  /(^|\s)(ExpandOpen|ExpandClosed)(\s|$)/
+	node.className = node.className.replace(re, '$1'+newClass+'$3')
+}
+
+function hasClass(elem, className) {
+	return new RegExp("(^|\\s)"+className+"(\\s|$)").test(elem.className)
 }
